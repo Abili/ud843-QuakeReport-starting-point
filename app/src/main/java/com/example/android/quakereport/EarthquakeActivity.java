@@ -51,5 +51,6 @@ public class EarthquakeActivity extends AppCompatActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(earthquakeListView.getContext(),
                 manager.getOrientation());
         earthquakeListView.addItemDecoration(dividerItemDecoration);
+
     }
 }
