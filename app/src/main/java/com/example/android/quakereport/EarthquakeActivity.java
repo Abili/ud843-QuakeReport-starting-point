@@ -15,6 +15,7 @@
  */
 package com.example.android.quakereport;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,30 +28,61 @@ import java.util.ArrayList;
 public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    EarthquakeAdapter adapter;
+
+    private static final String SAMPLE_JSON_RESPONSE =
+            "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=6&limit=10";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
-
         // Create a fake list of earthquake locations.
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
-        // Find a reference to the {@link ListView} in the layout
+        adapter = new EarthquakeAdapter(new ArrayList<Earthquake>(), this);
         RecyclerView earthquakeListView = findViewById(R.id.list);
-
         LinearLayoutManager manager = new LinearLayoutManager(this);
         earthquakeListView.setLayoutManager(manager);
-
-        // Create a new {@link ArrayAdapter} of earthquakes
-       EarthquakeAdapter adapter = new EarthquakeAdapter(earthquakes, EarthquakeActivity.this);
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
+
+
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(earthquakeListView.getContext(),
                 manager.getOrientation());
         earthquakeListView.addItemDecoration(dividerItemDecoration);
 
+
+        RequestAsyncTask requestAsyncTask = new RequestAsyncTask();
+        requestAsyncTask.execute(SAMPLE_JSON_RESPONSE);
+
     }
-}
+
+
+    private class RequestAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
+
+        @Override
+        protected ArrayList<Earthquake> doInBackground(String... urls) {
+            // Perform the HTTP request for earthquake data and process the response.
+
+            // Don't perform the request if there are no URLs, or the first URL is null
+            if (urls.length < 1 || urls[0] == null) {
+                return null;
+            }
+
+            ArrayList<Earthquake> result = Utils.fetchEarthquakeData(urls[0]);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Earthquake> result) {
+            // Clear the adapter of previous earthquake data
+            adapter.notifyItemRemoved(0);
+
+            // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
+            // data set. This will trigger the ListView to update.
+            if (result != null && !result.isEmpty()) {
+                adapter = new EarthquakeAdapter(result, EarthquakeActivity.this);
+            }
+
+
+        }
+    }}
