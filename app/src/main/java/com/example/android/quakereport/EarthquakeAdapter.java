@@ -57,7 +57,7 @@ public class EarthquakeAdapter extends RecyclerView.Adapter<EarthquakeAdapter.My
 
 
         holder.place.setText(infoArrayAdapter.get(position).getPlace());
-        holder.distance.setText(infoArrayAdapter.get(position).getDiatance());
+        //holder.distance.setText(infoArrayAdapter.get(position).getDiatance());
 
         Date dateObject = new Date(infoArrayAdapter.get(position).getTimeInMilliseconds());
 

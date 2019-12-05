@@ -144,11 +144,11 @@ public final class Utils {
 
                 double magnitude = properties.getDouble("mag");
                 String place = properties.getString("place");
-                String distance = properties.getString("distance");
+//                String distance = properties.getString("distance");
                 long time = properties.getLong("time");
 
                 String url1 = properties.getString("url");
-                Earthquake earthquake = new Earthquake(magnitude, place, distance, time, url1);
+                Earthquake earthquake = new Earthquake(magnitude, place, null, time, url1);
                 earthquakes.add(earthquake);
 
             }

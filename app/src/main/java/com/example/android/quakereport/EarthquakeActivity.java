@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -29,9 +30,12 @@ public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     EarthquakeAdapter adapter;
+    RecyclerView earthquakeListView;
 
     private static final String SAMPLE_JSON_RESPONSE =
-            "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=6&limit=10";
+
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=6&limit=10";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +43,10 @@ public class EarthquakeActivity extends AppCompatActivity {
         setContentView(R.layout.earthquake_activity);
         // Create a fake list of earthquake locations.
         adapter = new EarthquakeAdapter(new ArrayList<Earthquake>(), this);
-        RecyclerView earthquakeListView = findViewById(R.id.list);
+        earthquakeListView = findViewById(R.id.list);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         earthquakeListView.setLayoutManager(manager);
         earthquakeListView.setAdapter(adapter);
-
 
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(earthquakeListView.getContext(),
@@ -73,16 +76,18 @@ public class EarthquakeActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Earthquake> result) {
+        protected void onPostExecute(ArrayList<Earthquake> data) {
+            data = new ArrayList<>();
             // Clear the adapter of previous earthquake data
-            adapter.notifyItemRemoved(0);
-
+            data.clear();
             // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
             // data set. This will trigger the ListView to update.
-            if (result != null && !result.isEmpty()) {
-                adapter = new EarthquakeAdapter(result, EarthquakeActivity.this);
+            if (data != null && !data.isEmpty()) {
+                adapter = new EarthquakeAdapter(data, EarthquakeActivity.this);
+                earthquakeListView.setAdapter(adapter);
             }
 
 
         }
-    }}
+    }
+}
